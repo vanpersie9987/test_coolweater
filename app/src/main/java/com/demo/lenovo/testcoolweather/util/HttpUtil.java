@@ -11,6 +11,7 @@ import okhttp3.Request;
 
 public class HttpUtil {
     public static final String KEY = "b0164396499d4277bae97e9d00048011";
+    public static final String WEATHER_BACKGROUND = "http://guolin.tech/api/bing_pic";
     public static final String WEATHER_INFO = "http://guolin.tech/api/weather";
     public static final String ADDRESS_ROOT = "http://guolin.tech/api/china";
 

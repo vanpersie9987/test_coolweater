@@ -1,5 +1,7 @@
 package com.demo.lenovo.testcoolweather;
 
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -10,6 +12,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.demo.lenovo.testcoolweather.gson.Forecast;
 import com.demo.lenovo.testcoolweather.gson.Weather;
 import com.demo.lenovo.testcoolweather.util.HttpUtil;
@@ -34,11 +37,17 @@ public class WeatherActivity extends AppCompatActivity {
     private TextView mCarWashText;
     private TextView mSportText;
     private ImageView image_back;
+    private ImageView weather_background;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= 21) {
+            View view = getWindow().getDecorView();
+            view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
         setContentView(R.layout.activity_weather);
         init();
 //        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -51,9 +60,32 @@ public class WeatherActivity extends AppCompatActivity {
         mWeatherLayout.setVisibility(View.INVISIBLE);
         requestWeather(weatherId);
 //        }
+
+        loadBackGroundPic();
         setListener();
 
 
+    }
+
+    private void loadBackGroundPic() {
+        HttpUtil.sendOkHttpRequest(HttpUtil.WEATHER_BACKGROUND, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String pic = response.body().string();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Glide.with(WeatherActivity.this).load(pic).into(weather_background);
+                    }
+                });
+
+            }
+        });
     }
 
     private void setListener() {
@@ -157,5 +189,6 @@ public class WeatherActivity extends AppCompatActivity {
         mComfortText = (TextView) findViewById(R.id.comfort_text);
         mCarWashText = (TextView) findViewById(R.id.wash_text);
         mSportText = (TextView) findViewById(R.id.sport_text);
+        weather_background = (ImageView) findViewById(R.id.weather_background);
     }
 }
