@@ -3,6 +3,8 @@ package com.demo.lenovo.testcoolweather;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -26,6 +28,8 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class WeatherActivity extends AppCompatActivity {
+    public SwipeRefreshLayout mRefresh;
+    public DrawerLayout mDrawer;
     private ScrollView mWeatherLayout;
     private TextView mTitleCity;
     private TextView mTitleUpdateTime;
@@ -39,9 +43,7 @@ public class WeatherActivity extends AppCompatActivity {
     private TextView mSportText;
     private ImageView image_back;
     private ImageView weather_background;
-    private SwipeRefreshLayout mRefresh;
     private String mWeatherId;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,22 +94,24 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     private void setListener() {
-        image_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+
         mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 requestWeather(mWeatherId);
             }
         });
+        image_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDrawer.openDrawer(GravityCompat.START);
+            }
+        });
 
     }
 
-    private void requestWeather(String weatherId) {
+    public void requestWeather(String weatherId) {
+        mWeatherId = weatherId;
         String weatherUrl = HttpUtil.WEATHER_INFO + "?cityid=" + weatherId + "&key=" + HttpUtil.KEY;
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
@@ -204,6 +208,8 @@ public class WeatherActivity extends AppCompatActivity {
         weather_background = (ImageView) findViewById(R.id.weather_background);
         mRefresh = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
         mRefresh.setColorSchemeResources(R.color.colorPrimary);
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer);
+
 
     }
 }
