@@ -3,6 +3,7 @@ package com.demo.lenovo.testcoolweather;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +39,8 @@ public class WeatherActivity extends AppCompatActivity {
     private TextView mSportText;
     private ImageView image_back;
     private ImageView weather_background;
+    private SwipeRefreshLayout mRefresh;
+    private String mWeatherId;
 
 
     @Override
@@ -56,9 +59,9 @@ public class WeatherActivity extends AppCompatActivity {
 //            Weather weather = Utility.handleWeatherResponse(weatherString);
 //            showWeatherInfo(weather);
 //        } else {
-        String weatherId = getIntent().getStringExtra("weather_id");
+        mWeatherId = getIntent().getStringExtra("weather_id");
         mWeatherLayout.setVisibility(View.INVISIBLE);
-        requestWeather(weatherId);
+        requestWeather(mWeatherId);
 //        }
 
         loadBackGroundPic();
@@ -95,6 +98,12 @@ public class WeatherActivity extends AppCompatActivity {
                 finish();
             }
         });
+        mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                requestWeather(mWeatherId);
+            }
+        });
 
     }
 
@@ -107,6 +116,7 @@ public class WeatherActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         Toast.makeText(WeatherActivity.this, "获取天气信息失败", Toast.LENGTH_SHORT).show();
+                        mRefresh.setRefreshing(false);
                     }
                 });
 
@@ -127,8 +137,10 @@ public class WeatherActivity extends AppCompatActivity {
                         } else {
                             Toast.makeText(WeatherActivity.this, "获取天气信息失败", Toast.LENGTH_SHORT).show();
                         }
+                        mRefresh.setRefreshing(false);
                     }
                 });
+                loadBackGroundPic();
 
 
             }
@@ -190,5 +202,8 @@ public class WeatherActivity extends AppCompatActivity {
         mCarWashText = (TextView) findViewById(R.id.wash_text);
         mSportText = (TextView) findViewById(R.id.sport_text);
         weather_background = (ImageView) findViewById(R.id.weather_background);
+        mRefresh = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
+        mRefresh.setColorSchemeResources(R.color.colorPrimary);
+
     }
 }
